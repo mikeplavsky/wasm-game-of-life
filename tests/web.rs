@@ -11,10 +11,16 @@ use wasm_game_of_life::*;
 wasm_bindgen_test_configure!(run_in_browser);
 
 #[wasm_bindgen_test]
+fn test_collect() {
+    let arr: Vec<Cell> = (0..2).map(|_i| Cell::Alive).collect();
+    assert_eq!(vec![Cell::Alive, Cell::Alive], arr);
+}
+
+#[wasm_bindgen_test]
 fn test_unverse_index() {
     let u = Universe::new();
 
     assert_eq!(0, u.get_index(0, 0));
     assert_eq!(1, u.get_index(0, 1));
-    assert_eq!(5, u.get_index(1, 1));
+    assert_eq!(65, u.get_index(1, 1));
 }
