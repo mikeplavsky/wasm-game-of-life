@@ -91,12 +91,29 @@ fn test_fmt() {
     assert_eq!(Some('◼'), cs.next());
 }
 
+macro_rules! test_neighbors {
+    ($($name:ident : $exp:expr, $c:expr),*) => {
+
+        $(
+            #[wasm_bindgen_test]
+            fn $name(){
+                let u = Universe::new();
+                let count = u.live_neighbor_count($c.0,$c.1);
+                assert_eq!(
+                    $exp,
+                    count
+                    );
+            }
+        )*
+
+    }
+}
+
 #[wasm_bindgen_test]
 fn test_live_neighbors() {
-    let u = Universe::new();
-    let c = |r, c| u.live_neighbor_count(r, c);
-
-    assert_eq!(6, c(0, 1), "0:1");
-    assert_eq!(4, c(0, 0), "0:0");
-    assert_eq!(3, c(2, 4), "2:4");
+    test_neighbors!(
+        cell_0_1: 6, (0, 1),
+        cell_0_0: 4, (0, 0),
+        cell_2_4: 3, (2, 4)
+    );
 }
