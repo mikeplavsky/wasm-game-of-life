@@ -4,6 +4,7 @@ extern crate wasm_bindgen;
 mod utils;
 
 use cfg_if::cfg_if;
+use std::fmt;
 use std::fmt::Display;
 use wasm_bindgen::prelude::*;
 
@@ -30,6 +31,15 @@ pub struct Universe {
     width: usize,
     height: usize,
     cells: Vec<Cell>,
+}
+
+impl Universe {
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+    pub fn get_width(&self) -> usize {
+        self.width
+    }
 }
 
 #[wasm_bindgen]
@@ -62,7 +72,7 @@ impl Universe {
         row * self.width + column
     }
 
-    pub fn live_neighbor_count(&self, row: usize, column: usize) -> usize {
+    pub fn live_neighbor_count(&self, row: usize, column: usize) -> u8 {
         let mut count = 0;
         for r in vec![self.width - 1, 0, 1] {
             for c in vec![self.height - 1, 0, 1] {
@@ -70,22 +80,50 @@ impl Universe {
                     continue;
                 }
 
-                let n_r = (self.width + row) % self.width;
-                let n_c = (self.height + column) % self.height;
+                let n_r = (row + r) % self.width;
+                let n_c = (column + c) % self.height;
 
                 let idx = self.get_index(n_r, n_c);
-                count += self.cells[idx] as usize;
+                count += self.cells[idx] as u8;
             }
         }
         count
     }
+
+    pub fn rules(cell: Cell, count: u8) -> Cell {
+        match (cell, count) {
+            (Cell::Alive, x) if x < 2 => Cell::Dead,
+            (Cell::Alive, x) if x == 2 || x == 3 => Cell::Alive,
+            (Cell::Alive, x) if x > 3 => Cell::Dead,
+            (Cell::Dead, 3) => Cell::Alive,
+            (same, _) => same,
+        }
+    }
+
+    pub fn tick(&mut self) {
+        let mut next = self.cells.clone();
+
+        for r in 0..self.width {
+            for c in 0..self.height {
+                let idx = self.get_index(r, c);
+                let cell = self.cells[idx];
+
+                let count = self.live_neighbor_count(r, c);
+                let next_cell = Universe::rules(cell, count);
+
+                next[idx] = next_cell;
+            }
+        }
+
+        self.cells = next;
+    }
 }
 
 impl Display for Universe {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
         for s in self.cells.chunks(self.width) {
             for c in s {
-                let sym = if *c == Cell::Alive { '◻' } else { '◼' };
+                let sym = if *c == Cell::Dead { '◻' } else { '◼' };
                 write!(f, "{}", sym)?;
             }
             write!(f, "\n")?;
