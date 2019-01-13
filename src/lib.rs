@@ -20,6 +20,12 @@ macro_rules! log {
     };
 }
 
+macro_rules! u {
+    ($e:expr) => {
+        $e.unwrap()
+    };
+}
+
 cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
     // allocator.
@@ -140,11 +146,11 @@ impl Universe {
 
     pub fn draw(&self) -> String{
 
-        let wnd = web_sys::window().unwrap();
-        let doc = wnd.document().unwrap();
+        let wnd = u!{web_sys::window()};
+        let doc = u!{wnd.document()};
 
         log!("{:?}",doc.url());
-        doc.url().unwrap()
+        u!{doc.url()}
     }
 }
 
