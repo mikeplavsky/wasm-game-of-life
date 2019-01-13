@@ -45,6 +45,8 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
         let cells = (0..width * height)
@@ -62,6 +64,10 @@ impl Universe {
             height,
             cells,
         }
+    }
+
+    pub fn stop(&self) {
+        panic!("Done.");
     }
 
     pub fn render(&self) -> String {
