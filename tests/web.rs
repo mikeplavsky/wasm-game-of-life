@@ -117,3 +117,10 @@ fn test_live_neighbors() {
         cell_2_4: 3, (2, 4)
     );
 }
+
+#[wasm_bindgen_test]
+fn test_document() {
+    let u = Universe::new();
+    let url = u.draw();
+    assert_eq!(0, url.find("http").unwrap());
+}

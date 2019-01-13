@@ -138,10 +138,13 @@ impl Universe {
         self.cells = next;
     }
 
-    pub fn draw(&self) -> Result<(),JsValue>{
-        let doc = web_sys::window().unwrap().document().unwrap();
+    pub fn draw(&self) -> String{
+
+        let wnd = web_sys::window().unwrap();
+        let doc = wnd.document().unwrap();
+
         log!("{:?}",doc.url());
-        Ok(())
+        doc.url().unwrap()
     }
 }
 
