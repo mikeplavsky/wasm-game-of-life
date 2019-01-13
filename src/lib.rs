@@ -1,5 +1,6 @@
 extern crate cfg_if;
 extern crate wasm_bindgen;
+extern crate web_sys;
 
 mod utils;
 
@@ -7,6 +8,17 @@ use cfg_if::cfg_if;
 use std::fmt;
 use std::fmt::Display;
 use wasm_bindgen::prelude::*;
+
+macro_rules! log {
+    ($($t:tt)*) => {
+
+        let s = format!($($t)*);
+        let s1 = format!("{}:{}", file!(),line!());
+        let res = format!("{} {}", s1, s);
+
+        web_sys::console::log_1(&res.into());
+    };
+}
 
 cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -46,6 +58,8 @@ impl Universe {
 impl Universe {
     pub fn new() -> Universe {
         utils::set_panic_hook();
+
+        log!("creating universe...");
 
         let width = 64;
         let height = 64;
@@ -122,6 +136,11 @@ impl Universe {
         }
 
         self.cells = next;
+    }
+
+    pub fn draw(&self) {
+        let doc = web_sys::window().unwrap().document().unwrap();
+        log!("{:?}",doc);
     }
 }
 
