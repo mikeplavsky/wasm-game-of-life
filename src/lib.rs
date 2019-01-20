@@ -8,6 +8,7 @@ use cfg_if::cfg_if;
 use std::fmt;
 use std::fmt::Display;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
 macro_rules! log {
     ($($t:tt)*) => {
@@ -144,13 +145,20 @@ impl Universe {
         self.cells = next;
     }
 
-    pub fn draw(&self) -> String{
+    pub fn get_document(&self) -> web_sys::Document {
+        let wnd = u! {web_sys::window()};
+        u! {wnd.document()}
+    }
 
-        let wnd = u!{web_sys::window()};
-        let doc = u!{wnd.document()};
+    pub fn draw(&self) -> String {
+        let wnd = u! {web_sys::window()};
+        let doc = u! {wnd.document()};
 
-        log!("{:?}",doc.url());
-        u!{doc.url()}
+        let canvas = u! {doc.get_element_by_id("canvas")};
+        let canvas = canvas.dyn_into::<web_sys::HtmlCanvasElement>();
+
+        log!("{:?}", canvas);
+        u! {doc.url()}
     }
 }
 

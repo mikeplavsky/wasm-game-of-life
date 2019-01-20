@@ -14,7 +14,9 @@ version = "0.3.8"
 features = [
     "console",
     "Document",
-    "Window"]
+    "Window",
+    "Element",
+    "HtmlCanvasElement"]
 
 [dependencies]
 cfg-if = "0.1.2"

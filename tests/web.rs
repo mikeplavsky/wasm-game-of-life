@@ -121,6 +121,6 @@ fn test_live_neighbors() {
 #[wasm_bindgen_test]
 fn test_document() {
     let u = Universe::new();
-    let url = u.draw();
-    assert_eq!(0, url.find("http").unwrap());
+    let doc = u.get_document();
+    assert_eq!(0, doc.url().unwrap().find("http").unwrap());
 }
